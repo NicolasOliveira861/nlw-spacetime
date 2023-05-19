@@ -1,5 +1,11 @@
+import { useEffect } from "react";
 import { StatusBar } from "expo-status-bar";
 import { ImageBackground, Text, View, TouchableOpacity } from "react-native";
+import SecureStore from "expo-secure-store";
+import { makeRedirectUri, useAuthRequest } from "expo-auth-session";
+import { styled } from "nativewind";
+import { BaiJamjuree_700Bold } from "@expo-google-fonts/bai-jamjuree";
+import { useRouter } from "expo-router";
 
 import {
   useFonts,
@@ -7,21 +13,59 @@ import {
   Roboto_700Bold,
 } from "@expo-google-fonts/roboto";
 
-import { BaiJamjuree_700Bold } from "@expo-google-fonts/bai-jamjuree";
-
-import blurBg from "./src/assets/bg-blur.png";
-import Stripes from "./src/assets/stripes.svg";
-import NLWLogo from "./src/assets/nlw-spacetime-logo.svg";
-import { styled } from "nativewind";
+import blurBg from "../src/assets/bg-blur.png";
+import Stripes from "../src/assets/stripes.svg";
+import NLWLogo from "../src/assets/nlw-spacetime-logo.svg";
+import { api } from "../src/lib/api";
 
 const StyledStripes = styled(Stripes);
 
+const discovery = {
+  authorizationEndpoint: "https://github.com/login/oauth/authorize",
+  tokenEndpoint: "https://github.com/login/oauth/access_token",
+  revocationEndpoint:
+    "https://github.com/settings/connections/applications/7e71ccea63db354ffbca",
+};
+
 export default function App() {
+  const router = useRouter();
+
+  const [, response, signInWithGithub] = useAuthRequest(
+    {
+      clientId: "7e71ccea63db354ffbca",
+      scopes: ["identity"],
+      redirectUri: makeRedirectUri({
+        scheme: "nlwspacetime",
+      }),
+    },
+    discovery
+  );
+
   const [hasLoadedFonts] = useFonts({
     Roboto_400Regular,
     Roboto_700Bold,
     BaiJamjuree_700Bold,
   });
+
+  async function handleGithbuOAuthCode(code: string) {
+    const res = await api.post("/register", {
+      code,
+    });
+
+    const { token } = res.data;
+
+    await SecureStore.setItemAsync("token", token);
+
+    router.push("");
+  }
+
+  useEffect(() => {
+    if (response?.type === "success") {
+      const { code } = response.params;
+
+      handleGithbuOAuthCode(code);
+    }
+  }, [response]);
 
   if (!hasLoadedFonts) {
     return null;
@@ -54,6 +98,7 @@ export default function App() {
         <TouchableOpacity
           activeOpacity={0.7}
           className="rounded-full bg-green-500 px-5 py-3"
+          onPress={() => signInWithGithub()}
         >
           <Text className="font-alt text-sm uppercase text-black">
             Cadastrar lembrança
