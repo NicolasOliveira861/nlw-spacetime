@@ -1,7 +1,7 @@
+import { Copyright } from '@/components/Copyright';
 import { Hero } from '@/components/Hero';
 import { Profile } from '@/components/Profile';
 import { SignIn } from '@/components/SignIn';
-import { Copyright } from 'lucide-react';
 import {
   Bai_Jamjuree as BaiJamjuree,
   Roboto_Flex as Roboto,
@@ -39,7 +39,7 @@ export default function RootLayout({ children }: { children: ReactNode }) {
             <div className="absolute right-0 top-1/2 h-[288px] w-[526px] -translate-y-1/2 translate-x-1/2 rounded-full bg-purple-700 opacity-50 blur-full" />
 
             {/* Stripes */}
-            <div className="0top-0 absolute bottom-0 right-2 w-2 bg-stripes" />
+            <div className="absolute bottom-0 right-2 top-0 w-2 bg-stripes" />
 
             {isAutheticated ? <Profile /> : <SignIn />}
 
@@ -49,7 +49,7 @@ export default function RootLayout({ children }: { children: ReactNode }) {
           </div>
 
           {/* Right */}
-          <div className="flex flex-col bg-[url(../assets/bg-stars.svg)] bg-cover p-16">
+          <div className="flex max-h-screen flex-col overflow-y-scroll bg-[url(../assets/bg-stars.svg)] bg-cover">
             {children}
           </div>
         </main>
