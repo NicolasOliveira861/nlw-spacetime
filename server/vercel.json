@@ -1,0 +1,16 @@
+{
+  "version": 2,
+  "name": "nlw-spacetime-server",
+  "builds": [
+    {
+      "src": "src/server.ts",
+      "use": "@vercel/node"
+    }
+  ],
+  "routes": [
+    {
+      "src": "/(.*)",
+      "dest": "/app.js"
+    }
+  ]
+}
